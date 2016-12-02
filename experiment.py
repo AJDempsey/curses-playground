@@ -14,7 +14,21 @@ def read_snippet_from_file(file_name):
         file_string = "{0}".format(err)
     return (status, file_string)
 
+def find_next_template(line_list, template):
+    y = 0
+    x = 0
+    for line in line_list:
+        x = line.find(template)
+        if x < 0:
+            x = 0
+        else:
+            break
+        y += 1
+    return (y, x)
+
+
 def main(myscreen):
+    curses.start_color()
     myscreen.clear()
     status, file_string = read_snippet_from_file("for-loop.snip")
     if status < 0:
@@ -22,16 +36,31 @@ def main(myscreen):
         print(file_string)
         return
     #myscreen.border(0)
-    file_string_list = file_string.split( "\n")
+    working_list = file_string.split( "\n")
     line_num = 0
-    for line in file_string_list:
+    # Yellow is now gray, go figure
+    curses.init_color(curses.COLOR_YELLOW, 240, 240, 240)
+    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_GREEN) # Line is ok, passes validation?
+    curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED) # Line is not ok, doesn't pass validation?
+    curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_YELLOW) # Highlight template to edit
+
+    for line in working_list:
         myscreen.addstr(line_num, 0, line)
         line_num += 1
-    myscreen.move(0,0)
+    y, x = find_next_template(working_list, "<")
+    end_y, end_x = find_next_template(working_list, ">")
+
+    overwrite_string = working_list[y][x:end_x+1]
+    # Highlight the current template we're editing.
+    myscreen.addnstr(y, x, overwrite_string, (end_x - x+1), curses.color_pair(curses.COLOR_YELLOW))
+    myscreen.move(y, x)
     myscreen.refresh()
     myscreen.getch()
 
     curses.endwin()
+    #print( str(y)+" "+str(x))
+    #print( str(end_y)+" "+str(end_x))
+    #print(overwrite_string)
 
 if __name__ == '__main__':
     wrapper(main)

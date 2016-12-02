@@ -3,14 +3,31 @@
 import curses
 from curses import wrapper
 
-TAB_WIDTH = 8
+def read_snippet_from_file(file_name):
+    status = 1
+    file_string = ""
+    try:
+        with open(file_name, "r") as f:
+            file_string = f.read()
+    except IOError as err:
+        status = -1
+        file_string = "{0}".format(err)
+    return (status, file_string)
 
 def main(myscreen):
     myscreen.clear()
-    
+    status, file_string = read_snippet_from_file("for-loop.snip")
+    if status < 0:
+        print("Problem reading the snippet")
+        print(file_string)
+        return
     #myscreen.border(0)
-    myscreen.addstr(12, 0, "Python curses in action!")
-    myscreen.addstr(13, TAB_WIDTH, "A new line of text?!")
+    file_string_list = file_string.split( "\n")
+    line_num = 0
+    for line in file_string_list:
+        myscreen.addstr(line_num, 0, line)
+        line_num += 1
+    myscreen.move(0,0)
     myscreen.refresh()
     myscreen.getch()
 

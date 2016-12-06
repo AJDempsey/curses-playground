@@ -1,0 +1,46 @@
+
+Purpose of this tool
+====================
+This tool is an attempt to provide snippet like functionality, as seen in
+many programming IDEs, on the command line. The code should be generic enough to
+run bash like functions and extensible enough to be used for specific command
+lines. This tool uses the python interface to the curses library to provide
+functionality.
+
+Design
+====================
+This tool will read from a file that will contain a snippet something like:
+
+for (<template>; <template>; <template>) {
+	<template>
+}
+
+The user will then be able to replace all sections of the snippet that are
+marked by < and >. Only the sections marked will be editable. Navigating with
+this restriction will be done using a special character, I've suggested the TAB
+character. Navigation should wrap round once it reaches the end of the string.
+
+The section that is currently being edited should be highlighted in
+some manner. On 256 colour enabled terminals this could be a different colour,
+grey background white text maybe. On simpler terminals maybe underlining or
+italics.
+
+Once all the template sections have been completed pressing the enter key will
+complete the snippet and run it.
+
+Tasks
+===================
+1) Read a snippet from file: Done
+2) Highlight current edit position: Done
+3) Add navigation using special character: Not started
+4) Allow editing of snippets: Not started
+5) Execute code on enter key: Not started
+
+Possible extensions
+===================
+Allow validation of the snippet (a line by line basis?)
+Allow reversed navigation (shift + TAB)
+Allow rediting of a template string (How easy would this be?)
+Given a data model create snippets for the structures and give suggestions
+	on the user required templates
+Given a data model provide tool tip suggestions for the template

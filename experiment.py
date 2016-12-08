@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 
+import sys
 import curses
 from curses import wrapper
 
@@ -38,6 +39,10 @@ def highlight_next_template(screen, working_list):
 
 
 def main(myscreen):
+
+    stdout_filename = open('debug.log', 'w')
+    sys.stdout = stdout_filename
+
     curses.start_color()
     myscreen.clear()
     status, file_string = read_snippet_from_file("for-loop.snip")

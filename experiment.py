@@ -26,6 +26,16 @@ def find_next_bound(line_list, bounding_char):
         y += 1
     return (y, x)
 
+def highlight_next_template(screen, working_list):
+    y, x = find_next_bound(working_list, "<")
+    end_y, end_x = find_next_bound(working_list, ">")
+
+    overwrite_string = working_list[y][x:end_x+1]
+    # Highlight the current template we're editing.
+    screen.addnstr(y, x, overwrite_string, (end_x - x+1), curses.color_pair(curses.COLOR_YELLOW))
+    screen.move(y, x)
+    screen.refresh()
+
 
 def main(myscreen):
     curses.start_color()
@@ -47,14 +57,7 @@ def main(myscreen):
     for line in working_list:
         myscreen.addstr(line_num, 0, line)
         line_num += 1
-    y, x = find_next_bound(working_list, "<")
-    end_y, end_x = find_next_bound(working_list, ">")
-
-    overwrite_string = working_list[y][x:end_x+1]
-    # Highlight the current template we're editing.
-    myscreen.addnstr(y, x, overwrite_string, (end_x - x+1), curses.color_pair(curses.COLOR_YELLOW))
-    myscreen.move(y, x)
-    myscreen.refresh()
+    highlight_next_template(myscreen, working_list)
     myscreen.getch()
 
     curses.endwin()

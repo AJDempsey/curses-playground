@@ -45,10 +45,9 @@ def highlight_next_template(screen, win, working_list):
     # Highlight the current template we're editing.
     screen.addnstr(y, x, overwrite_string, (end_x - x+1), curses.color_pair(curses.COLOR_YELLOW))
     screen.move(y, x)
-    win.move(y,x)
-    win.refresh()
+    win.mvwin(y, x)
     screen.refresh()
-
+    win.refresh()
 
 def user_loop(screen, win, working_list):
     next_char = screen.getkey()
@@ -87,7 +86,6 @@ def main(myscreen):
         line_num += 1
     win = curses.newwin(6, 6, 20, 20)
     win.addnstr(0, 0,'test', 10)
-    win.refresh()
     highlight_next_template(myscreen, win, working_list)
     user_loop(myscreen, win, working_list)
     curses.endwin()

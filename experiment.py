@@ -35,7 +35,7 @@ def find_next_bound(line_list, bounding_char):
         y += 1
     return (y, x)
 
-def highlight_next_template(screen, win, working_list):
+def highlight_next_template(screen, options, working_list):
     y, x = find_next_bound(working_list, "<")
     screen.move(y, x)
     screen.refresh()
@@ -47,18 +47,19 @@ def highlight_next_template(screen, win, working_list):
     # Highlight the current template we're editing.
     screen.addnstr(y, x, overwrite_string, (end_x - x+1), curses.color_pair(curses.COLOR_YELLOW))
     screen.move(y, x)
+    win = options['win']
     win.mvwin(y, x)
     screen.refresh()
     win.refresh()
 
-def user_loop(screen, win, working_list):
+def user_loop(screen, options, working_list):
     next_char = screen.getkey()
     curses.echo()
 
     while next_char != "\n":
         print("Next char: "+next_char)
         if next_char == "\t":
-            highlight_next_template(screen, win, working_list)
+            highlight_next_template(screen, options, working_list)
         screen.refresh()
         next_char = screen.getkey()
 
@@ -86,10 +87,16 @@ def main(myscreen):
     for line in working_list:
         myscreen.addstr(line_num, 0, line)
         line_num += 1
-    win = curses.newwin(6, 6, 20, 20)
+
+    # Create the options window
+    win = curses.newwin(6, 6, 1, 10)
     win.addnstr(0, 0,'test', 10)
-    highlight_next_template(myscreen, win, working_list)
-    user_loop(myscreen, win, working_list)
+    options = {}
+    options['win'] = win
+    options['text'] = ''
+
+    highlight_next_template(myscreen, options, working_list)
+    user_loop(myscreen, options, working_list)
     curses.endwin()
     #print( str(y)+" "+str(x))
     #print( str(end_y)+" "+str(end_x))

@@ -16,10 +16,18 @@ def read_snippet_from_file(file_name):
     return (status, file_string)
 
 def find_next_bound(line_list, bounding_char):
-    y = 0
-    x = 0
-    for line in line_list:
-        x = line.find(bounding_char)
+    y, x = curses.getsyx()
+    cursor_x = x
+    if y > len(line_list):
+        return y, x
+    for line in line_list[y:]:
+        print("y: "+str(y)+" x: "+str(x)+" bounding char is "+bounding_char)
+        if x > len(line):
+            x = 0
+        x = line.find(bounding_char, x)
+        if x == cursor_x:
+            x = line.find(bounding_char, x+1)
+        print("Found "+bounding_char+" at y "+str(y)+" x "+str(x))
         if x < 0:
             x = 0
         else:
@@ -31,12 +39,24 @@ def highlight_next_template(screen, working_list):
     y, x = find_next_bound(working_list, "<")
     end_y, end_x = find_next_bound(working_list, ">")
 
+    if y >= len(working_list) or end_x + 1 > len(working_list[y]):
+        return y, x
     overwrite_string = working_list[y][x:end_x+1]
     # Highlight the current template we're editing.
     screen.addnstr(y, x, overwrite_string, (end_x - x+1), curses.color_pair(curses.COLOR_YELLOW))
     screen.move(y, x)
     screen.refresh()
 
+
+def user_loop(screen, working_list):
+    next_char = screen.getkey()
+
+    while next_char != "\n":
+        print("Next char: "+next_char)
+        if next_char == "\t":
+            highlight_next_template(screen, working_list)
+        screen.refresh()
+        next_char = screen.getkey()
 
 def main(myscreen):
 
@@ -63,7 +83,7 @@ def main(myscreen):
         myscreen.addstr(line_num, 0, line)
         line_num += 1
     highlight_next_template(myscreen, working_list)
-    myscreen.getch()
+    user_loop(myscreen, working_list)
 
     curses.endwin()
     #print( str(y)+" "+str(x))

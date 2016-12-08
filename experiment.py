@@ -54,20 +54,25 @@ def highlight_next_template(screen, options, working_list):
 
 def user_loop(screen, options, working_list):
     next_char = screen.getkey()
-    curses.echo()
 
     while next_char != "\n":
+        # Build the text string using new characters
         string = options['txt']
         string = string + next_char
         print("Next char: "+next_char)
+
+        # A <tab> is used to move to the next template
         if next_char == "\t":
             highlight_next_template(screen, options, working_list)
-        win = options['win']
-        win.addnstr(0, 0, string, 10)
-        win.refresh()
-        screen.refresh()
-        options['txt'] = string
-        next_char = screen.getkey()
+
+        # Otherwise we refresh the window with the text
+        else:
+            win = options['win']
+            win.addnstr(0, 0, string, len(string))
+            win.refresh()
+            screen.refresh()
+            options['txt'] = string
+            next_char = screen.getkey()
 
 def main(myscreen):
 
@@ -96,7 +101,6 @@ def main(myscreen):
 
     # Create the options window
     win = curses.newwin(6, 6, 1, 10)
-    win.addnstr(0, 0, '', 10)
     options = {}
     options['win'] = win
     options['txt'] = ''

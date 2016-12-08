@@ -21,13 +21,13 @@ class Snippet(object):
 		 	[\
 				[ 	{"type": Token_type.text, "value":"if"},\
 					{"type": Token_type.text, "value":"("},\
-					{"type": Token_type.token, "value":"condition", "is_active":False},\
+					{"type": Token_type.token, "value":"condition", "is_active":False, "is_editing":False},\
 					{"type": Token_type.text, "value":")"},\
 					{"type": Token_type.list_start, "value":"{"},\
 					{"type": Token_type.newline, "value":"\n"},\
 				],\
 				[\
-					{"type": Token_type.token, "value":"Your code here", "is_active":False},\
+					{"type": Token_type.token, "value":"Your code here", "is_active":False, "is_editing":False},\
 					{"type": Token_type.newline, "value":"\n"}
 				],\
 				[\
@@ -40,11 +40,25 @@ class Snippet(object):
 		self.__find_tokens()
 		self.highlight_next_token()
 		self.screen = curses_screen
+		self.is_user_input = False
 
 	def move_to_next_edit_token(self):
 		self.highlight_next_token()
+		self.is_user_input = False
 		self.update_screen()
 
+	def update_token_string(self, user_input):
+		self.is_user_input = True
+		y, x = self.token_position[-1]
+		if self.token_repr[y][x]["is_active"]:
+			self.token_repr[y][x]["value"] = ""
+			self.token_repr[y][x]["is_active"] = False
+			self.token_repr[y][x]["is_editing"] = True
+		if user_input != "KEY_BACKSPACE":
+			self.token_repr[y][x]["value"] += user_input
+		else:
+			self.token_repr[y][x]["value"] = self.token_repr[y][x]["value"][:-1]
+		self.update_screen()
 
 	def update_screen(self):
 		indentation_level = 0
@@ -63,21 +77,23 @@ class Snippet(object):
 					self.screen.addstr(line_number, line_length, token_string)
 					line_length += len(prefix)
 				if token["type"] == Token_type.token:
-					token_string += "<"
-				token_string += token["value"]
-				if token["type"] == Token_type.token:
-					token_string += ">"
-				token_string += " "
-				if token["type"] == Token_type.token and token["is_active"]:
-					token_string = token_string[:-1]
-					self.screen.addstr(line_number, line_length, token_string,\
-						curses.color_pair(curses.COLOR_YELLOW))
-					cursor_x = line_length
-					cursor_y = line_number
+					token_string = "<"+token["value"]+">"
+					if token["is_active"]:
+						self.screen.addstr(line_number, line_length, token_string,\
+							curses.color_pair(curses.COLOR_YELLOW))
+						if not self.is_user_input:
+							cursor_x = line_length
+							cursor_y = line_number
+					else:
+						self.screen.addstr(line_number, line_length, token_string)
+					if self.is_user_input and token["is_editing"]:
+						cursor_x = line_length + len(token["value"]) + 1
+						cursor_y = line_number
 					line_length += len(token_string)
 					token_string = " "
 					self.screen.addstr(line_number, line_length, token_string)
 				else:
+					token_string += token["value"]+" "
 					self.screen.addstr(line_number, line_length, token_string)
 				line_length += len(token_string)
 				if token["type"] == Token_type.list_start:
@@ -104,8 +120,10 @@ class Snippet(object):
 		prev_token = self.token_position[-1]
 		y, x = prev_token
 		self.token_repr[y][x]["is_active"] = False
+		self.token_repr[y][x]["is_editing"] = False
 		y, x = next_token
 		self.token_repr[y][x]["is_active"] = True
+		self.token_repr[y][x]["is_editing"] = False
 		self.token_position.append(next_token)
 
 	def __str__(self):

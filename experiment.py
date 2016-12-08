@@ -116,6 +116,8 @@ def main(myscreen):
     while user_input != "\n":
         if user_input == "\t":
             test_snippet.move_to_next_edit_token()
+        else:
+            test_snippet.update_token_string(user_input)
         user_input = myscreen.getkey()
 
     print(test_snippet)

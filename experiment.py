@@ -4,6 +4,8 @@ import sys
 import curses
 from curses import wrapper
 
+from snippet import Snippet
+
 def read_snippet_from_file(file_name):
     status = 1
     file_string = ""
@@ -95,19 +97,28 @@ def main(myscreen):
     curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED) # Line is not ok, doesn't pass validation?
     curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_YELLOW) # Highlight template to edit
 
-    for line in working_list:
-        myscreen.addstr(line_num, 0, line)
-        line_num += 1
+    #for line in working_list:
+    #    myscreen.addstr(line_num, 0, line)
+#        line_num += 1
 
-    # Create the options window
-    win = curses.newwin(6, 6, 1, 10)
-    options = {}
-    options['win'] = win
-    options['txt'] = ''
+    # Create the options window#
+#    win = curses.newwin(6, 6, 1, 10)
+#    options = {}
+#    options['win'] = win
+#    options['txt'] = ''
 
-    highlight_next_template(myscreen, options, working_list)
-    user_loop(myscreen, options, working_list)
-    curses.endwin()
+#    highlight_next_template(myscreen, options, working_list)
+#    user_loop(myscreen, options, working_list)
+#    curses.endwin()
+    test_snippet = Snippet(myscreen)
+    test_snippet.update_screen()
+    user_input = myscreen.getkey()
+    while user_input != "\n":
+        if user_input == "\t":
+            test_snippet.move_to_next_edit_token()
+        user_input = myscreen.getkey()
+
+    print(test_snippet)
     #print( str(y)+" "+str(x))
     #print( str(end_y)+" "+str(end_x))
     #print(overwrite_string)

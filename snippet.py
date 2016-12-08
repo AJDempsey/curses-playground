@@ -10,6 +10,10 @@ class Token_type(Enum):
 	list_start = 4
 	list_end = 5
 
+"""
+Class to represent a snippet that has contains metadata with each token.
+
+"""
 class Snippet(object):
 
 	def __init__(self, curses_screen):
@@ -37,6 +41,11 @@ class Snippet(object):
 		self.highlight_next_token()
 		self.screen = curses_screen
 
+	def move_to_next_edit_token(self):
+		self.highlight_next_token()
+		self.update_screen()
+
+
 	def update_screen(self):
 		indentation_level = 0
 		line_number = 0
@@ -46,10 +55,13 @@ class Snippet(object):
 		for line in self.token_repr:
 			line_length = 0
 			for token in line:
+				token_string = ""
 				if token["type"] == Token_type.list_end:
-					indentation_level -= 1
+					indentation_level -= 4
+				if line_length == 0:
 					prefix = "\t"*indentation_level
-				token_string = prefix
+					self.screen.addstr(line_number, line_length, token_string)
+					line_length += len(prefix)
 				if token["type"] == Token_type.token:
 					token_string += "<"
 				token_string += token["value"]
@@ -57,21 +69,23 @@ class Snippet(object):
 					token_string += ">"
 				token_string += " "
 				if token["type"] == Token_type.token and token["is_active"]:
+					token_string = token_string[:-1]
 					self.screen.addstr(line_number, line_length, token_string,\
 						curses.color_pair(curses.COLOR_YELLOW))
 					cursor_x = line_length
 					cursor_y = line_number
+					line_length += len(token_string)
+					token_string = " "
+					self.screen.addstr(line_number, line_length, token_string)
 				else:
 					self.screen.addstr(line_number, line_length, token_string)
 				line_length += len(token_string)
 				if token["type"] == Token_type.list_start:
-					indentation_level += 1
-					prefix = "\t"*indentation_level
+					indentation_level += 4
 			line_number += 1
 			line_length = 0
 		self.screen.move(cursor_y, cursor_x)
 		self.screen.refresh()
-		self.screen.getkey()
 
 
 	def __find_tokens(self):

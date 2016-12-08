@@ -50,6 +50,7 @@ def highlight_next_template(screen, working_list):
 
 def user_loop(screen, working_list):
     next_char = screen.getkey()
+    curses.echo()
 
     while next_char != "\n":
         print("Next char: "+next_char)
@@ -83,6 +84,9 @@ def main(myscreen):
         myscreen.addstr(line_num, 0, line)
         line_num += 1
     highlight_next_template(myscreen, working_list)
+    win = curses.newwin(6, 6, 20, 20)
+    win.addnstr(0, 0,'test', 10)
+    win.refresh()
     user_loop(myscreen, working_list)
 
     curses.endwin()

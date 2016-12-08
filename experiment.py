@@ -14,11 +14,11 @@ def read_snippet_from_file(file_name):
         file_string = "{0}".format(err)
     return (status, file_string)
 
-def find_next_template(line_list, template):
+def find_next_bound(line_list, bounding_char):
     y = 0
     x = 0
     for line in line_list:
-        x = line.find(template)
+        x = line.find(bounding_char)
         if x < 0:
             x = 0
         else:
@@ -47,8 +47,8 @@ def main(myscreen):
     for line in working_list:
         myscreen.addstr(line_num, 0, line)
         line_num += 1
-    y, x = find_next_template(working_list, "<")
-    end_y, end_x = find_next_template(working_list, ">")
+    y, x = find_next_bound(working_list, "<")
+    end_y, end_x = find_next_bound(working_list, ">")
 
     overwrite_string = working_list[y][x:end_x+1]
     # Highlight the current template we're editing.

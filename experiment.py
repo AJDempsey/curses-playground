@@ -57,10 +57,16 @@ def user_loop(screen, options, working_list):
     curses.echo()
 
     while next_char != "\n":
+        string = options['txt']
+        string = string + next_char
         print("Next char: "+next_char)
         if next_char == "\t":
             highlight_next_template(screen, options, working_list)
+        win = options['win']
+        win.addnstr(0, 0, string, 10)
+        win.refresh()
         screen.refresh()
+        options['txt'] = string
         next_char = screen.getkey()
 
 def main(myscreen):
@@ -90,10 +96,10 @@ def main(myscreen):
 
     # Create the options window
     win = curses.newwin(6, 6, 1, 10)
-    win.addnstr(0, 0,'test', 10)
+    win.addnstr(0, 0, '', 10)
     options = {}
     options['win'] = win
-    options['text'] = ''
+    options['txt'] = ''
 
     highlight_next_template(myscreen, options, working_list)
     user_loop(myscreen, options, working_list)

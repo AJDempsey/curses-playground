@@ -32,7 +32,7 @@ Tasks
 ===================
 1) Read a snippet from file: Done
 2) Highlight current edit position: Done
-3) Add navigation using special character: Not started
+3) Add navigation using special character: Done
 4) Allow editing of snippets: Not started
 5) Execute code on enter key: Not started
 

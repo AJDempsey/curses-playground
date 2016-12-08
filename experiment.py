@@ -37,6 +37,8 @@ def find_next_bound(line_list, bounding_char):
 
 def highlight_next_template(screen, win, working_list):
     y, x = find_next_bound(working_list, "<")
+    screen.move(y, x)
+    screen.refresh()
     end_y, end_x = find_next_bound(working_list, ">")
 
     if y >= len(working_list) or end_x + 1 > len(working_list[y]):

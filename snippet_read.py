@@ -7,12 +7,7 @@ __author__ = 'colin@doch.org.uk'
 import sys
 import argparse
 from xml.dom.minidom import parse, Node
-
-def remove_all(node):
-    while len(node.childNodes) > 0:
-        child = node.firstChild
-        node.removeChild(child)
-        remove_all(node)
+from snippet import Snippet
 
 def remove_blanks(node):
     for x in node.childNodes:
@@ -26,7 +21,7 @@ def remove_blanks(node):
         elif x.nodeType == Node.ELEMENT_NODE:
             remove_blanks(x)
 
-def handleSnippetXML(dom):
+def handleSnippetsXML(dom):
 
     snippets = dom.getElementsByTagName("snippet")
     for snippet in snippets:
@@ -35,14 +30,24 @@ def handleSnippetXML(dom):
 def handleSnippet(dom, snippet):
     for child in snippet.childNodes:
         if child.nodeType == Node.TEXT_NODE:
-            print(child.nodeValue)
+            print("\"%s\"" % child.nodeValue)
         if child.nodeType == Node.ELEMENT_NODE:
-            print(child.tagName)
+            if child.tagName != 'text':
+                print(child.tagName)
             if child.hasChildNodes:
                 remove_blanks(child)
                 handleSnippet(dom, child)
                 if child.tagName == "list":
                     print("list_end")
+
+def snippet_read(xml_file):
+    if xml_file:
+        dom = parse(xml_file)
+        remove_blanks(dom)
+        handleSnippetsXML(dom)
+        return []
+    else:
+        exit(1)
 
 def main():
     # Start by parsing and sanity checking all input.
@@ -54,10 +59,7 @@ def main():
     args = parser.parse_args()
     xml = args.xml
 
-    if xml:
-        dom = parse(xml)
-        remove_blanks(dom)
-        handleSnippetXML(dom)
+    stream = snippet_read(xml)
 
 if __name__ == "__main__":
     main()

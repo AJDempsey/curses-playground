@@ -47,4 +47,18 @@ Given a data model provide tool tip suggestions for the template
 
 Tool Tip example
 ===================
-    win = curses.newwin(6, 6, 1, 10)
+# curses.newwin(nlines, ncols, begin_y, begin_x)
+            tool_tip_string = "Key stroke {} not recognized".format(user_input)
+            y, x = screen.getmaxyx()
+            win = curses.newwin(1, len(tool_tip_string)+1, int(y/2), int(x/2) - int(len(tool_tip_string)/2))
+            win.border()
+            win.clear()
+            win.addstr(0, 0, tool_tip_string, curses.color_pair(2))
+            win.refresh()
+            time.sleep(2)
+            del(win)
+            test_snippet.update_screen()
+
+# This should be made into a class that can then have subclasses.
+# Error tool tips that are deleted after a certain amount of time and suggestion
+# tips that stay until the active token moves.

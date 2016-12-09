@@ -1,9 +1,11 @@
-<text>if</text>
-<text>(</text>
-<token />
-<text>)</text>
-<list_start />
-<newline />
-<token />
-<newline />
-<list_end />
+<snippet>
+  <text>if</text>
+  <text>(</text>
+  <token />
+  <text>)</text>
+  <list>
+    <newline />
+    <token />
+    <newline />
+  </list>
+</snippet>

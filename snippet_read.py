@@ -34,7 +34,15 @@ def handleSnippetXML(dom):
 
 def handleSnippet(dom, snippet):
     for child in snippet.childNodes:
-        print(child.tagName)
+        if child.nodeType == Node.TEXT_NODE:
+            print(child.nodeValue)
+        if child.nodeType == Node.ELEMENT_NODE:
+            print(child.tagName)
+            if child.hasChildNodes:
+                remove_blanks(child)
+                handleSnippet(dom, child)
+                if child.tagName == "list":
+                    print("list_end")
 
 def main():
     # Start by parsing and sanity checking all input.

@@ -46,26 +46,33 @@ class Snippet(object):
 			]
 		self.token_position = []
 		self.__find_tokens()
-		self.highlight_next_token()
+		self.current_token = None
+		self.highlight_token(1)
 		self.screen = curses_screen
 		self.is_user_input = False
 
 	def move_to_next_edit_token(self):
-		self.highlight_next_token()
+		self.move_to_different_edit_token(1)
+
+	def move_to_previous_edit_token(self):
+		self.move_to_different_edit_token(-1)
+
+	def move_to_different_edit_token(self, direction):
+		self.highlight_token(direction)
 		self.is_user_input = False
 		self.update_screen()
 
 	def update_token_string(self, user_input):
 		self.is_user_input = True
-		editing_token = self.token_position[-1]
-		if self.token_repr[editing_token]["is_active"]:
-			self.token_repr[editing_token]["value"] = ""
-			self.token_repr[editing_token]["is_active"] = False
-			self.token_repr[editing_token]["is_editing"] = True
+		if self.token_repr[self.current_token]["is_active"]:
+			self.token_repr[self.current_token]["value"] = ""
+			self.token_repr[self.current_token]["is_active"] = False
+			self.token_repr[self.current_token]["is_editing"] = True
 		if user_input != "KEY_BACKSPACE":
-			self.token_repr[editing_token]["value"] += user_input
+			self.token_repr[self.current_token]["value"] += user_input
 		else:
-			self.token_repr[editing_token]["value"] = self.token_repr[editing_token]["value"][:-1]
+			self.token_repr[self.current_token]["value"] = \
+				self.token_repr[self.current_token]["value"][:-1]
 		self.update_screen()
 
 	def update_screen(self):
@@ -122,14 +129,24 @@ class Snippet(object):
 				self.token_position.append(index_of_editable)
 			index_of_editable += 1
 
-	def highlight_next_token(self):
-		next_token = self.token_position.pop(0)
-		prev_token = self.token_position[-1]
+	def highlight_token(self, direction):
+		if self.current_token == None:
+			self.current_token = self.token_position.pop(0)
+			self.token_repr[self.current_token]["is_active"] = True
+			self.token_repr[self.current_token]["is_editing"] = False
+			return
+		if direction > 0:
+			prev_token = self.current_token
+			self.current_token = self.token_position.pop(0)
+			self.token_position.append(prev_token)
+		elif direction < 0:
+			prev_token = self.current_token
+			self.current_token = self.token_position.pop()
+			self.token_position.insert(0, prev_token)
 		self.token_repr[prev_token]["is_active"] = False
 		self.token_repr[prev_token]["is_editing"] = False
-		self.token_repr[next_token]["is_active"] = True
-		self.token_repr[next_token]["is_editing"] = False
-		self.token_position.append(next_token)
+		self.token_repr[self.current_token]["is_active"] = True
+		self.token_repr[self.current_token]["is_editing"] = False
 
 	def __str__(self):
 		working_string = ""

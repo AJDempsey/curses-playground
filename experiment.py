@@ -3,6 +3,7 @@
 import sys
 import curses
 import time
+import tool_tip
 from curses import wrapper
 
 from snippet import Snippet
@@ -30,18 +31,17 @@ def user_loop(screen):
         elif user_input[:3] == "KEY" and user_input != "KEY_BACKSPACE":
             tool_tip_string = "Key stroke {} not recognized".format(user_input)
             y, x = screen.getmaxyx()
-            win = curses.newwin(1, len(tool_tip_string)+1, int(y/2), int(x/2) - int(len(tool_tip_string)/2))
-            win.border()
-            win.clear()
-            win.addstr(0, 0, tool_tip_string, curses.color_pair(2))
-            win.refresh()
+            tt = tool_tip.Tool_tip(int(y/2), int(x/2) - int(len(tool_tip_string)/2), 1, len(tool_tip_string)+1)
+            tt.add_to_window(tool_tip_string)
+            tt.activate()
             time.sleep(2)
-            del(win)
+            del(tt)
             test_snippet.update_screen()
         else:
             test_snippet.update_token_string(user_input)
         user_input = screen.getkey()
     print(test_snippet)
+
 def main(myscreen):
 
     stdout_filename = open('debug.log', 'w')

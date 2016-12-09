@@ -91,11 +91,9 @@ def main(myscreen):
     #myscreen.border(0)
     working_list = file_string.split( "\n")
     line_num = 0
-    # Yellow is now gray, go figure
-    curses.init_color(curses.COLOR_YELLOW, 240, 240, 240)
-    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_GREEN) # Line is ok, passes validation?
-    curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED) # Line is not ok, doesn't pass validation?
-    curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_YELLOW) # Highlight template to edit
+    if curses.has_colors():
+        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_GREEN) # Line is ok, passes validation?
+        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED) # Line is not ok, doesn't pass validation?
 
     #for line in working_list:
     #    myscreen.addstr(line_num, 0, line)

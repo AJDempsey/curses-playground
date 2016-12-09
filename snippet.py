@@ -52,17 +52,35 @@ class Snippet(object):
 		self.is_user_input = False
 
 	def move_to_next_edit_token(self):
-		self.move_to_different_edit_token(1)
+		"""
+		Move forward one edit token.
+		"""
+		self.__move_to_different_edit_token(1)
 
 	def move_to_previous_edit_token(self):
-		self.move_to_different_edit_token(-1)
+		"""
+		Move back one edit token.
+		"""
+		self.__move_to_different_edit_token(-1)
 
-	def move_to_different_edit_token(self, direction):
+	def __move_to_different_edit_token(self, direction):
+		"""
+		Generic movement function to reduce code duplication.
+		"""
 		self.highlight_token(direction)
 		self.is_user_input = False
 		self.update_screen()
 
 	def update_token_string(self, user_input):
+		"""
+		Update the contents of the currently editable token.
+
+		Each time the user comes to the token it is wiped out and then evey
+		keypress captured is added to the token's value. Every key except
+		<enter>, <shift>+<tab>, and <tab> will be added. This means strange
+		strings can appear if the user isn't careful (usually special keys).
+		"""
+
 		self.is_user_input = True
 		if self.token_repr[self.current_token]["is_active"]:
 			self.token_repr[self.current_token]["value"] = ""
@@ -76,6 +94,17 @@ class Snippet(object):
 		self.update_screen()
 
 	def update_screen(self):
+		"""
+		This is the heavy lifting function that traverses the data structure
+		and updates the displayed string based on the contents of each entry
+		in the structure.
+
+		The general algorithm is very naive, it clears the screen and then walks
+		the whole data structure updating the screen with the contents of each
+		index. It does this for every valid keypress. Improvements on the
+		algorithm can be done later.
+		"""
+
 		self.screen.clear()
 		indentation_level = 0
 		line_number = 0
@@ -123,6 +152,11 @@ class Snippet(object):
 
 
 	def __find_tokens(self):
+		"""
+		Find the index of all tokens that the user needs to modify and store
+		them in a list.
+		"""
+
 		index_of_editable = 0
 		for token in self.token_repr:
 			if token["type"] == Token_type.token:
@@ -130,6 +164,17 @@ class Snippet(object):
 			index_of_editable += 1
 
 	def highlight_token(self, direction):
+		"""
+		Highlight the next token that can be edited, the next token is
+		defined by the direction argument.
+		This function marks the token so it can be highlighted on the next
+		screen update.
+		We store the index of the highlighted token in self.current_token for
+		use in other functions and to make finding the next token easier.
+		The current token is added to one end of the list and the next token to
+		highlight is taken from the other end.
+		"""
+
 		if self.current_token == None:
 			self.current_token = self.token_position.pop(0)
 			self.token_repr[self.current_token]["is_active"] = True
@@ -149,6 +194,11 @@ class Snippet(object):
 		self.token_repr[self.current_token]["is_editing"] = False
 
 	def __str__(self):
+		"""
+		Convert the snippet into a human readable string.
+		Will print out what ever is currently contained in each token.
+		"""
+
 		working_string = ""
 		indentation_level = 0
 		for token in self.token_repr:

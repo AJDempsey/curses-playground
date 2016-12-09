@@ -33,7 +33,7 @@ Tasks
 1) Read a snippet from file: Done
 2) Highlight current edit position: Done
 3) Add navigation using special character: Done
-4) Allow editing of snippets: Not started
+4) Allow editing of snippets: Done
 5) Execute code on enter key: Not started
 
 Possible extensions
@@ -44,3 +44,7 @@ Allow rediting of a template string (How easy would this be?)
 Given a data model create snippets for the structures and give suggestions
 	on the user required templates
 Given a data model provide tool tip suggestions for the template
+
+Tool Tip example
+===================
+    win = curses.newwin(6, 6, 1, 10)

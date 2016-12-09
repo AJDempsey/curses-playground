@@ -91,13 +91,14 @@ class Snippet(object):
 			if token["type"] == Token_type.token:
 				token_string = "<"+token["value"]+">"
 				if token["is_active"]:
-					self.screen.addstr(line_number, line_length, token_string,\
-						curses.color_pair(curses.COLOR_YELLOW))
+					self.screen.addstr(line_number, line_length, token_string,
+						curses.A_REVERSE)
 					if not self.is_user_input:
 						cursor_x = line_length
 						cursor_y = line_number
 				else:
-					self.screen.addstr(line_number, line_length, token_string)
+					self.screen.addstr(line_number, line_length, token_string,\
+						curses.A_UNDERLINE)
 				if self.is_user_input and token["is_editing"]:
 					cursor_x = line_length + len(token["value"]) + 1
 					cursor_y = line_number

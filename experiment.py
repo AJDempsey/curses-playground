@@ -31,7 +31,7 @@ def user_loop(screen):
         elif user_input[:3] == "KEY" and user_input != "KEY_BACKSPACE":
             tool_tip_string = "Key stroke {} not recognized".format(user_input)
             y, x = screen.getmaxyx()
-            tt = tool_tip.Tool_tip(int(y/2), int(x/2) - int(len(tool_tip_string)/2), 1, len(tool_tip_string)+1)
+            tt = tool_tip.Tool_tip(y -1, 0, 1, len(tool_tip_string)+1)
             tt.add_to_window(tool_tip_string)
             tt.activate()
             time.sleep(2)

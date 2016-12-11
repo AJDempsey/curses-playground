@@ -205,6 +205,26 @@ class Snippet(object):
 	def remove_error_tool_tip(self):
 		self.error_tool_tip = None
 
+	def insert_new_edit_token(self):
+		new_token = {"type": Token_type.token, "value":"Your code here", "is_active":False,\
+					"is_editing":False}
+		line_index, _ = self.screen.getyx()
+		number_of_newlines = 0
+		insert_index = 0
+		for token in self.token_repr:
+			if token["type"] == Token_type.newline:
+				number_of_newlines += 1
+			insert_index += 1
+			if number_of_newlines -1 == line_index:
+				break
+		self.token_repr.insert(insert_index, new_token)
+		new_token = {"type": Token_type.newline, "value":"\n"}
+		self.token_repr.insert(insert_index+1, new_token)
+		self.token_position = []
+		self.__find_tokens()
+		self.update_screen()
+
+
 	def __str__(self):
 		"""
 		Convert the snippet into a human readable string.

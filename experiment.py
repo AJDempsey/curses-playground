@@ -36,6 +36,8 @@ def user_loop(screen):
             test_snippet.move_to_next_edit_token()
         elif user_input == "KEY_BTAB":
             test_snippet.move_to_previous_edit_token()
+        elif user_input == "KEY_IC":
+            test_snippet.insert_new_edit_token()
         elif user_input[:3] == "KEY" and user_input != "KEY_BACKSPACE":
             tool_tip_string = "Key stroke {} not recognized".format(user_input)
             y, _ = screen.getmaxyx()  # We don't need the x variable of the screen size, so ignore it.

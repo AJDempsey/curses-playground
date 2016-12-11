@@ -30,7 +30,7 @@ def user_loop(screen):
             test_snippet.move_to_previous_edit_token()
         elif user_input[:3] == "KEY" and user_input != "KEY_BACKSPACE":
             tool_tip_string = "Key stroke {} not recognized".format(user_input)
-            y, x = screen.getmaxyx()
+            y, _ = screen.getmaxyx()  # We don't need the x variable of the screen size, so ignore it.
             tt = tool_tip.Tool_tip(y -1, 0, 1, len(tool_tip_string)+1)
             tt.add_to_window(tool_tip_string)
             tt.activate()
@@ -54,8 +54,6 @@ def main(myscreen):
         print("Problem reading the snippet")
         print(file_string)
         return
-    working_list = file_string.split( "\n")
-    line_num = 0
     if curses.has_colors():
         curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_GREEN) # Line is ok, passes validation?
         curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED) # Line is not ok, doesn't pass validation?

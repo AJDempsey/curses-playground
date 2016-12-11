@@ -4,6 +4,7 @@ import sys
 import curses
 import time
 import tool_tip
+import threading
 from curses import wrapper
 
 from snippet import Snippet
@@ -18,6 +19,13 @@ def read_snippet_from_file(file_name):
         status = -1
         file_string = "{0}".format(err)
     return (status, file_string)
+
+def display_tool_tip(tool_tip_window, main_window):
+    time.sleep(2)
+    tool_tip_window.deactivate()
+    main_window.remove_error_tool_tip()
+    del(tool_tip_window)
+    main_window.update_screen()
 
 def user_loop(screen):
     test_snippet = Snippet(screen)
@@ -34,8 +42,9 @@ def user_loop(screen):
             tt = tool_tip.Tool_tip(y -1, 0, 1, len(tool_tip_string)+1)
             tt.add_to_window(tool_tip_string)
             tt.activate()
-            time.sleep(2)
-            del(tt)
+            tool_tip_thread = threading.Thread(target=display_tool_tip, args=(tt, test_snippet))
+            tool_tip_thread.start()
+            test_snippet.add_error_tool_tip(tt)
             test_snippet.update_screen()
         else:
             test_snippet.update_token_string(user_input)
@@ -61,4 +70,7 @@ def main(myscreen):
     user_loop(myscreen)
 
 if __name__ == '__main__':
+    tool_tip_thread = None
     wrapper(main)
+    if tool_tip_thread is not None:
+        tool_tip_thread.join()

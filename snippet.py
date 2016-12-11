@@ -50,6 +50,7 @@ class Snippet(object):
 		self.highlight_token(1)
 		self.screen = curses_screen
 		self.is_user_input = False
+		self.error_tool_tip = None
 
 	def move_to_next_edit_token(self):
 		"""
@@ -149,6 +150,8 @@ class Snippet(object):
 				indentation_level += 4
 		self.screen.move(cursor_y, cursor_x)
 		self.screen.refresh()
+		if self.error_tool_tip is not None and self.error_tool_tip.is_active():
+			self.error_tool_tip.activate()
 
 
 	def __find_tokens(self):
@@ -192,6 +195,15 @@ class Snippet(object):
 		self.token_repr[prev_token]["is_editing"] = False
 		self.token_repr[self.current_token]["is_active"] = True
 		self.token_repr[self.current_token]["is_editing"] = False
+
+	def  add_error_tool_tip(self, new_tool_tip):
+		if self.error_tool_tip is not None:
+			del(self.error_tool_tip)
+		self.error_tool_tip = new_tool_tip
+		self.error_tool_tip.activate()
+
+	def remove_error_tool_tip(self):
+		self.error_tool_tip = None
 
 	def __str__(self):
 		"""

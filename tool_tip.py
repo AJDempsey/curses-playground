@@ -14,6 +14,7 @@ class Tool_tip(object):
         self.height = y_size
         self.width = x_size
         self.window_content = []
+        self.active = False
 
     def add_to_window(self, new_addition):
         self.window_content.append(new_addition)
@@ -30,3 +31,10 @@ class Tool_tip(object):
             self.win.addstr(count, 0, self.window_content[count], curses.color_pair(2))
             count += 1
         self.win.refresh()
+        self.active = True
+
+    def deactivate(self):
+        self.active = False
+
+    def is_active(self):
+        return self.active

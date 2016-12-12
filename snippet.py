@@ -45,8 +45,8 @@ class Snippet(object):
 				{"type": Token_type.newline, "value":"\n"}\
 			]
 		self.token_position = []
+		self.current_token = -1
 		self.__find_tokens()
-		self.current_token = None
 		self.highlight_token(1)
 		self.screen = curses_screen
 		self.is_user_input = False
@@ -165,6 +165,13 @@ class Snippet(object):
 			if token["type"] == Token_type.token:
 				self.token_position.append(index_of_editable)
 			index_of_editable += 1
+		if self.current_token > -1:
+			# Find index of the currently highlighted token in our regenerated list.
+			# Remove that token index from the list and reorganise it so that everything
+			# before the index is now at the end of the list.
+			# The index will be added back into the list at the next navigation jump.
+			index = self.token_position.index(self.current_token)
+			self.token_position = self.token_position[index+1:] + self.token_position[:index]
 
 	def highlight_token(self, direction):
 		"""
@@ -178,7 +185,7 @@ class Snippet(object):
 		highlight is taken from the other end.
 		"""
 
-		if self.current_token == None:
+		if self.current_token  ==  -1:
 			self.current_token = self.token_position.pop(0)
 			self.token_repr[self.current_token]["is_active"] = True
 			self.token_repr[self.current_token]["is_editing"] = False

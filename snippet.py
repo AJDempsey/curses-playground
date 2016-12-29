@@ -1,9 +1,20 @@
+"""
+Base module for snippets that can be built upon to provide specific
+snippet functionality.
+
+Copyright (c) 2016 Anthony Dempsey, Colin Docherty
+"""
+
 #! /usr/bin/python3
 
 from enum import Enum
 import curses
 
 class Token_type(Enum):
+    """
+    Enum class to describe the different types of tokens we've parsed.
+    """
+
     text = 1
     token = 2
     newline = 3
@@ -11,6 +22,10 @@ class Token_type(Enum):
     list_end = 5
 
     def __str__(self):
+        """
+        Convert Enum to a string representation.
+        """
+
         if self.value == 1:
             return "text"
         elif self.value == 2:
@@ -24,13 +39,21 @@ class Token_type(Enum):
         else:
             return "unkown"
 
-"""
-Class to represent a snippet that has contains metadata with each token.
 
-"""
 class Snippet(object):
+    """
+    Class to represent a snippet that has contains metadata with each token.
+    """
 
     def __init__(self, curses_screen):
+        """
+        Constructor for the class.
+        The token_repr in other classes should parse a file containing either:
+        i) A token representation in xml
+        or
+        ii) A normal string that the snippet class itself will parse into a token stream
+        """
+
         self.token_repr =\
              [\
                  {"type": Token_type.text, "value":"if"},\
@@ -44,10 +67,10 @@ class Snippet(object):
                 {"type": Token_type.list_end, "value":"}"},\
                 {"type": Token_type.newline, "value":"\n"}\
             ]
-        self.token_position = []
-        self.current_token = -1
-        self.__find_tokens()
-        self.highlight_token(1)
+        self.token_position = [] # List of editable token positions in token_repr.
+        self.current_token = -1 # The current index in token_repr for the token we're editing.
+        self.__find_tokens() # Populate token_position.
+        self.highlight_token(1) # Highlight the first token in the token string that we can edit.
         self.screen = curses_screen
         self.is_user_input = False
         self.error_tool_tip = None
@@ -204,15 +227,29 @@ class Snippet(object):
         self.token_repr[self.current_token]["is_editing"] = False
 
     def  add_error_tool_tip(self, new_tool_tip):
+        """
+        When an unkown key is pressed we want the user to know that we don't understand.
+        This adds a tooltip to the screen and keeps it there over screen refreshes.
+        """
+
         if self.error_tool_tip is not None:
-            del(self.error_tool_tip)
+            del self.error_tool_tip
         self.error_tool_tip = new_tool_tip
         self.error_tool_tip.activate()
 
     def remove_error_tool_tip(self):
+        """
+        Delete an exisiting tool tip from the class and therefore the screen.
+        """
         self.error_tool_tip = None
 
     def insert_new_edit_token(self):
+        """
+        For snippets without a defined data model the user should not be limited to only
+        the code in the defined snippet. They should be able to add their own lines and modify
+        them at will.
+        """
+
         new_token = {"type": Token_type.token, "value":"Your code here", "is_active":False,\
                     "is_editing":False}
         line_index, _ = self.screen.getyx()

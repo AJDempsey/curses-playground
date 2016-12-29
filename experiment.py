@@ -1,33 +1,48 @@
 #! /usr/bin/python3
+"""
+An example of how to use a snippet class to provide structure for cli commands
+that code can be added to,
+
+Copyright (c) 2016 Anthony Dempsey, Colin Docherty
+"""
 
 import sys
 import curses
-import time
-import tool_tip
-import threading
 from curses import wrapper
+import time
+import threading
 
+import tool_tip
 from snippet import Snippet
 
 def read_snippet_from_file(file_name):
+    """
+    Read user snippet from file.
+    """
     status = 1
     file_string = ""
     try:
-        with open(file_name, "r") as f:
-            file_string = f.read()
+        with open(file_name, "r") as file_handle:
+            file_string = file_handle.read()
     except IOError as err:
         status = -1
         file_string = "{0}".format(err)
     return (status, file_string)
 
 def display_tool_tip(tool_tip_window, main_window):
+    """
+    Activate the tool tip, replace it if one already exists.
+    """
     time.sleep(2)
     tool_tip_window.deactivate()
     main_window.remove_error_tool_tip()
-    del(tool_tip_window)
+    del tool_tip_window
     main_window.update_screen()
 
-def user_loop(screen):
+def user_loop(screen, tool_tip_thread):
+    """
+    This function is where most of the work happens. This is where all the user input is processed.
+    """
     test_snippet = Snippet(screen)
     test_snippet.update_screen()
     user_input = screen.getkey()
@@ -40,21 +55,24 @@ def user_loop(screen):
             test_snippet.insert_new_edit_token()
         elif user_input[:3] == "KEY" and user_input != "KEY_BACKSPACE":
             tool_tip_string = "Key stroke {} not recognized".format(user_input)
-            y, _ = screen.getmaxyx()  # We don't need the x variable of the screen size, so ignore it.
-            tt = tool_tip.Tool_tip(y -1, 0, 1, len(tool_tip_string)+1)
-            tt.add_to_window(tool_tip_string)
-            tt.activate()
-            tool_tip_thread = threading.Thread(target=display_tool_tip, args=(tt, test_snippet))
+            y_coord, _ = screen.getmaxyx()  # We don't need the x variable of the screen size, so ignore it.
+            tt_instance = tool_tip.Tool_tip(y_coord -1, 0, 1, len(tool_tip_string)+1)
+            tt_instance.add_to_window(tool_tip_string)
+            tt_instance.activate()
+            tool_tip_thread = threading.Thread(target=display_tool_tip,\
+                    args=(tt_instance, test_snippet))
             tool_tip_thread.start()
-            test_snippet.add_error_tool_tip(tt)
+            test_snippet.add_error_tool_tip(tt_instance)
             test_snippet.update_screen()
         else:
             test_snippet.update_token_string(user_input)
         user_input = screen.getkey()
     print(test_snippet)
 
-def main(myscreen):
-
+def main(myscreen, tool_tip_thread):
+    """
+    Main function to initialise curses and call the user function.
+    """
     stdout_filename = open('debug.log', 'w')
     sys.stdout = stdout_filename
 
@@ -69,10 +87,10 @@ def main(myscreen):
         curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_GREEN) # Line is ok, passes validation?
         curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_RED) # Line is not ok, doesn't pass validation?
 
-    user_loop(myscreen)
+    user_loop(myscreen, tool_tip_thread)
 
 if __name__ == '__main__':
     tool_tip_thread = None
-    wrapper(main)
+    wrapper(main, tool_tip_thread)
     if tool_tip_thread is not None:
         tool_tip_thread.join()

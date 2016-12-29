@@ -270,7 +270,15 @@ class Snippet(object):
 
     def validate_line(self, line_number):
         """
-        Validate one line of the snippet if there is a data model available
+        Validate one line of the snippet if there is a data model available.
+        Derived classes should implement how this is accomplished.
+        """
+        pass
+
+    def  execute_snippet(self):
+        """
+        Convert internal snippet representation to a string and excute it.
+        Derived classes should implement how this is accomplished.
         """
         pass
 

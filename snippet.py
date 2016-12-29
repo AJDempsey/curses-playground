@@ -268,6 +268,11 @@ class Snippet(object):
         self.__find_tokens()
         self.update_screen()
 
+    def validate_line(self, line_number):
+        """
+        Validate one line of the snippet if there is a data model available
+        """
+        pass
 
     def __str__(self):
         """
